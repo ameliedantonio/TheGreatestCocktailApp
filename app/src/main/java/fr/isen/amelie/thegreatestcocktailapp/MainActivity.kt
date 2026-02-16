@@ -31,9 +31,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TheGreatestCocktailAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                Scaffold(modifier = Modifier.fillMaxSize(),
+                    topBar = {
+                        TopAppBar()
+                    }
+                    ) { innerPadding ->
+                    DetailCocktailScreen(
+                        //name = "Android",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -48,8 +52,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MonImage() {
     Image(
-        painter = painterResource(id = R.drawable.image_fruits),
-        contentDescription = "Les Fruits",
+        painter = painterResource(id = R.drawable.cocktails),
+        contentDescription = "Les Cocktails",
         modifier = Modifier
             .fillMaxWidth()
             .height(200.dp)
