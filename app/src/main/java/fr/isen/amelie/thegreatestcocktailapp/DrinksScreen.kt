@@ -1,5 +1,6 @@
 package fr.isen.amelie.thegreatestcocktailapp
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -29,7 +31,7 @@ fun DrinksScreen(modifier: Modifier, category: String) {
 
     LazyColumn(modifier
         .fillMaxSize()
-        .background(brush = Brush.linearGradient(colors = listOf(Color.Cyan, Color.Black)))
+        .background(brush = Brush.linearGradient(colors = listOf(Color(0xFFFF9800), Color(0xFFFF9800))))
         .padding(all= 16.dp),
         verticalArrangement = Arrangement.spacedBy(space = 16.dp)) {
         item {
@@ -37,7 +39,10 @@ fun DrinksScreen(modifier: Modifier, category: String) {
         }
 
         items(items=drinks) { drink ->
-            Button (onClick = {},
+            val context = LocalContext.current
+            Button (onClick = {
+                val intent = Intent(context,DetailCocktailActivity::class.java)
+                context.startActivity(intent)},
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(size = 25.dp),
                 colors = ButtonColors(

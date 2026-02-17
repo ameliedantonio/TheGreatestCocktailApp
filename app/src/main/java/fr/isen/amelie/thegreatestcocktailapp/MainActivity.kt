@@ -11,48 +11,97 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
+import androidx.navigation.compose.rememberNavController
 import fr.isen.amelie.thegreatestcocktailapp.ui.theme.TheGreatestCocktailAppTheme
+
+enum class NavigationItem(
+    val title: String,
+    val icon: ImageVector,
+    val route: String
+) {
+    Home(title="A la une", Icons.Default.Home, route="home"),
+    List(title="Categories", Icons.Default.Menu, route="list"),
+    Fav(title="Favoris", Icons.Default.Favorite, route="fav"),
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TheGreatestCocktailAppTheme {
+            TheGreatestCocktailAppTheme{
                 val snackbarHostState = remember { SnackbarHostState() }
+                val navController = rememberNavController()
+                val startNavigationItem = NavigationItem.Home
+                val currentNavigationItem: MutableState<NavigationItem> = remember { mutableStateOf(value= startNavigationItem) }
                 Scaffold(modifier = Modifier.fillMaxSize(),
                     snackbarHost = {
                         SnackbarHost(snackbarHostState)
                     },
-                    //bottomBar = {
-                    //    barre()
-                    //}
-                    ) { innerPadding ->
-                    //DetailCocktailScreen(
-                    CategoriesScreen(
-                        //name = "Android",
-                        modifier = Modifier.padding(innerPadding),
-                        //snackbarHostState = snackbarHostState
-                        onCategoryClick = { category ->
-                            println("Catégorie cliquée : $category")
-
+                    bottomBar = {
+                        NavigationBar {
+                            NavigationItem.entries.forEach { navigationItem ->
+                                NavigationBarItem(
+                                    selected = currentNavigationItem.value == navigationItem,
+                                    onClick = {
+                                        navController.navigate(navigationItem.route)
+                                        currentNavigationItem.value = navigationItem
+                                    },
+                                    label = {
+                                        Text(text = navigationItem.title)
+                                    },
+                                    icon = {
+                                        Icon(navigationItem.icon, contentDescription = "")
+                                    }
+                                )
+                            }
                         }
-                    )
+                    }
+                ) { innerPadding ->
+                    NavHost(
+                        navController = navController,
+                        //modifier = Modifier.padding(innerPadding),
+                        startDestination = startNavigationItem.route
+                    ) {
+                        NavigationItem.entries.forEach { navigationItem ->
+                            composable (navigationItem.route) {
+                                when (navigationItem) {
+                                    NavigationItem.Home -> DetailCocktailScreen(Modifier.padding( paddingValues = innerPadding), snackbarHostState)
+                                    NavigationItem.List -> CategoriesScreen(Modifier.padding( paddingValues = innerPadding))
+                                    NavigationItem.Fav -> { }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

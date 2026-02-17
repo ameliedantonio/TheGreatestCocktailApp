@@ -43,6 +43,7 @@ import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -52,23 +53,19 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun DetailCocktailScreen(modifier: Modifier, snackbarHostState: SnackbarHostState) {
-
     var isFavorite by remember { mutableStateOf(false) }
-
     Scaffold(
         topBar = {
             TopAppBar(snackbarHostState)
-        }
+        },
+        containerColor = Color(0xFFF4E4C1)
     ) { innerPadding ->
-
         Column(
             modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .background(Color(0xFFF4E4C1))
                 .verticalScroll(rememberScrollState())
                 .padding(all = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -81,31 +78,23 @@ fun DetailCocktailScreen(modifier: Modifier, snackbarHostState: SnackbarHostStat
                     .size(size = 300.dp)
                 //contentScale = ContentScale.Crop
             )
-
             Spacer(modifier = Modifier.height(16.dp))
-
             Text(
                 text = "Spritz",
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFFFF9800), //ou 0xFFFF6F00
             )
-
             Spacer(modifier = Modifier.height(8.dp))
-
             Text(text = "Categorie : Cocktail")
             Text(text = "Verre : Verre à vin")
-
             Spacer(modifier = Modifier.height(16.dp))
-
             Text(
                 text = "Ingrédients",
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
             )
-
             Spacer(modifier = Modifier.height(8.dp))
-
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
@@ -127,17 +116,13 @@ fun DetailCocktailScreen(modifier: Modifier, snackbarHostState: SnackbarHostStat
                     Text("• Tranche d’orange")
                 }
             }
-
             Spacer(modifier = Modifier.height(16.dp))
-
             Text(
                 text = "Recette",
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
             )
-
             Spacer(modifier = Modifier.height(8.dp))
-
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
@@ -151,35 +136,36 @@ fun DetailCocktailScreen(modifier: Modifier, snackbarHostState: SnackbarHostStat
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-
                     Text("1.  Remplir un verre de glaçons")
                     Text("2.  Ajouter le Prosecco")
                     Text("3.  Ajouter l’Aperol")
                     Text("4.  Compléter avec l’eau gazeuse")
                     Text("5.  Mélanger doucement")
                     Text("6.  Ajouter une tranche d’orange")
-
                 }
-
             }
-
         }
     }
 }
 
-
 @kotlin.OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar(snakebarHostState: SnackbarHostState) {
+fun TopAppBar(
+    snakebarHostState: SnackbarHostState) {
     CenterAlignedTopAppBar(
         title = {
             Text(text = "Random")
         },
+
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color(0xFFFF9800), // couleur de fond
+            titleContentColor = Color.White,    // couleur du texte
+            actionIconContentColor = Color.White
+        ),
         actions = {
             val added = "Ajouté aux favoris"
             val removed = "Retiré des favoris"
 //            val context = LocalContext.current
-
             val snackbarScope = rememberCoroutineScope ()
             val isFav = remember { mutableStateOf(false) }
             IconToggleButton(
@@ -206,3 +192,4 @@ fun TopAppBar(snakebarHostState: SnackbarHostState) {
         }
     )
 }
+
