@@ -32,6 +32,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.border
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.platform.LocalContext
 
 
@@ -39,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 @Composable
 fun CategoriesScreen(
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState,
     onCategoryClick: (String) -> Unit = {}
 ) {
     // Partie 3
@@ -52,14 +55,10 @@ fun CategoriesScreen(
     )
 
     Scaffold(
-        modifier = modifier
-            .fillMaxSize(),
-        containerColor = Color(0xFFF4E4C1),
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Categories") }
-            )
-        }
+            TopAppBar2(snackbarHostState)
+        },
+        containerColor = Color(0xFFF4E4C1)
     ) { innerPadding ->
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -126,4 +125,21 @@ fun getCategoryColor(category: String): Color {
         "Soft Drink" -> Color(0xFF4FC3F7)
         else -> Color.LightGray
     }
+}
+
+@kotlin.OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopAppBar2(snakebarHostState: SnackbarHostState) {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(text = "Random")
+        },
+
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color(0xFFFF9800), // couleur de fond
+            titleContentColor = Color.White,    // couleur du texte
+            actionIconContentColor = Color.White
+        )
+
+    )
 }

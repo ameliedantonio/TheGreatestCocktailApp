@@ -96,7 +96,7 @@ class MainActivity : ComponentActivity() {
                             composable (navigationItem.route) {
                                 when (navigationItem) {
                                     NavigationItem.Home -> DetailCocktailScreen(Modifier.padding( paddingValues = innerPadding), snackbarHostState)
-                                    NavigationItem.List -> CategoriesScreen(Modifier.padding( paddingValues = innerPadding))
+                                    NavigationItem.List -> CategoriesScreen(Modifier.padding( paddingValues = innerPadding), snackbarHostState)
                                     NavigationItem.Fav -> { }
                                 }
                             }
