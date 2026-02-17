@@ -132,7 +132,7 @@ fun getCategoryColor(category: String): Color {
 fun TopAppBar2(snakebarHostState: SnackbarHostState) {
     CenterAlignedTopAppBar(
         title = {
-            Text(text = "Random")
+            Text(text = "Categories")
         },
 
         colors = TopAppBarDefaults.topAppBarColors(
