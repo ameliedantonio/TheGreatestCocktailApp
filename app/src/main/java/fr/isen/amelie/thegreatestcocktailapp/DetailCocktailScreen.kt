@@ -40,142 +40,167 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 
 
 @Composable
-fun DetailCocktailScreen(modifier: Modifier) {
+fun DetailCocktailScreen(modifier: Modifier, snackbarHostState: SnackbarHostState) {
 
     var isFavorite by remember { mutableStateOf(false) }
 
-    Column(
-        modifier
-            .fillMaxSize()
-            .background(Color(0xFFF4E4C1))
-            .verticalScroll(rememberScrollState())
-            .padding(all = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            painterResource(id = R.drawable.spritz),
-            contentDescription = "photo spritz",
-            modifier = Modifier
-                .fillMaxWidth()
-                .size(size = 300.dp)
-            //contentScale = ContentScale.Crop
-        )
+    Scaffold(
+        topBar = {
+            TopAppBar(snackbarHostState)
+        }
+    ) { innerPadding ->
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Spritz",
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(text = "Categorie : Cocktail")
-        Text(text = "Verre : Verre à vin")
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Ingrédients",
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(8.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color(0xFFFFF8E1)
-            )
+        Column(
+            modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .background(Color(0xFFF4E4C1))
+                .verticalScroll(rememberScrollState())
+                .padding(all = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
+            Image(
+                painterResource(id = R.drawable.spritz),
+                contentDescription = "photo spritz",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("• 6 cl de Prosecco")
-                Text("• 4 cl d’Aperol")
-                Text("• 2 cl d’eau gazeuse")
-                Text("• Glaçons")
-                Text("• Tranche d’orange")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Recette",
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(8.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color(0xFFFFF8E1)
+                    .size(size = 300.dp)
+                //contentScale = ContentScale.Crop
             )
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
 
-                Text("1.  Remplir un verre de glaçons")
-                Text("2.  Ajouter le Prosecco")
-                Text("3.  Ajouter l’Aperol")
-                Text("4.  Compléter avec l’eau gazeuse")
-                Text("5.  Mélanger doucement")
-                Text("6.  Ajouter une tranche d’orange")
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Spritz",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFFFF9800), //ou 0xFFFF6F00
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(text = "Categorie : Cocktail")
+            Text(text = "Verre : Verre à vin")
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Ingrédients",
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFFFF8E1)
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("• 6 cl de Prosecco")
+                    Text("• 4 cl d’Aperol")
+                    Text("• 2 cl d’eau gazeuse")
+                    Text("• Glaçons")
+                    Text("• Tranche d’orange")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Recette",
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFFFF8E1)
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+
+                    Text("1.  Remplir un verre de glaçons")
+                    Text("2.  Ajouter le Prosecco")
+                    Text("3.  Ajouter l’Aperol")
+                    Text("4.  Compléter avec l’eau gazeuse")
+                    Text("5.  Mélanger doucement")
+                    Text("6.  Ajouter une tranche d’orange")
+
+                }
 
             }
 
         }
-
     }
 }
 
 
 @kotlin.OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar() {
+fun TopAppBar(snakebarHostState: SnackbarHostState) {
     CenterAlignedTopAppBar(
         title = {
             Text(text = "Random")
         },
         actions = {
-            val isFav : MutableState<Boolean> = remember { mutableStateOf(value = false) }
+            val added = "Ajouté aux favoris"
+            val removed = "Retiré des favoris"
+//            val context = LocalContext.current
+
+            val snackbarScope = rememberCoroutineScope ()
+            val isFav = remember { mutableStateOf(false) }
             IconToggleButton(
-                checked = isFav.value,
+                isFav.value,
                 onCheckedChange = {
                     isFav.value = !isFav.value
-
+                    // TOAST
+//                    Toast.makeText(
+//                        context,
+//                        if (isFav.value) added else removed,
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+                    snackbarScope.launch {
+                        snakebarHostState.showSnackbar(if (isFav.value) added else removed)
+                    }
                 }
-
             ) {
                 Icon(
                     imageVector = if (isFav.value) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = "fav", tint = if (isFav.value) Color.Red else Color.Gray
+                    contentDescription = "fav",
+                    tint = if (isFav.value) Color.Red else Color.Gray
                 )
             }
         }

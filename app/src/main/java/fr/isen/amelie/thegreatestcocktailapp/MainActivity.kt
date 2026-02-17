@@ -13,8 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -31,20 +34,43 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TheGreatestCocktailAppTheme {
+                val snackbarHostState = remember { SnackbarHostState() }
                 Scaffold(modifier = Modifier.fillMaxSize(),
-                    topBar = {
-                        TopAppBar()
-                    }
+                    snackbarHost = {
+                        SnackbarHost(snackbarHostState)
+                    },
+                    //bottomBar = {
+                    //    barre()
+                    //}
                     ) { innerPadding ->
-                    DetailCocktailScreen(
+                    //DetailCocktailScreen(
+                    CategoriesScreen(
                         //name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
+                        //snackbarHostState = snackbarHostState
+                        onCategoryClick = { category ->
+                            println("Catégorie cliquée : $category")
+
+                        }
                     )
                 }
             }
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
