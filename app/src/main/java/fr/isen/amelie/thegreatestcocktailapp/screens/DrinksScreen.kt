@@ -1,4 +1,4 @@
-package fr.isen.amelie.thegreatestcocktailapp
+package fr.isen.amelie.thegreatestcocktailapp.screens
 
 import android.content.Intent
 import androidx.compose.foundation.background
@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import fr.isen.amelie.thegreatestcocktailapp.activities.DetailCocktailActivity
 
 @Composable
 fun DrinksScreen(modifier: Modifier, category: String) {
@@ -41,7 +42,7 @@ fun DrinksScreen(modifier: Modifier, category: String) {
         items(items=drinks) { drink ->
             val context = LocalContext.current
             Button (onClick = {
-                val intent = Intent(context,DetailCocktailActivity::class.java)
+                val intent = Intent(context, DetailCocktailActivity::class.java)
                 context.startActivity(intent)},
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(size = 25.dp),

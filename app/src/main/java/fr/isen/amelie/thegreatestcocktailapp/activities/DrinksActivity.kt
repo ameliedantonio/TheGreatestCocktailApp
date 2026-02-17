@@ -1,4 +1,4 @@
-package fr.isen.amelie.thegreatestcocktailapp
+package fr.isen.amelie.thegreatestcocktailapp.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import fr.isen.amelie.thegreatestcocktailapp.screens.DrinksScreen
 import fr.isen.amelie.thegreatestcocktailapp.ui.theme.TheGreatestCocktailAppTheme
 
 class DrinksActivity : ComponentActivity() {
@@ -17,8 +18,8 @@ class DrinksActivity : ComponentActivity() {
         val category: String = intent.getStringExtra("category").toString()
         setContent {
             TheGreatestCocktailAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    DrinksScreen(Modifier.padding(innerPadding), category)
+                Scaffold(modifier = Modifier.Companion.fillMaxSize()) { innerPadding ->
+                    DrinksScreen(Modifier.Companion.padding(innerPadding), category)
                 }
             }
         }

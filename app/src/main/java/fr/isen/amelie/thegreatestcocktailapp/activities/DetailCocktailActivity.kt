@@ -1,4 +1,4 @@
-package fr.isen.amelie.thegreatestcocktailapp
+package fr.isen.amelie.thegreatestcocktailapp.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,11 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import fr.isen.amelie.thegreatestcocktailapp.screens.DetailCocktailScreen
 import fr.isen.amelie.thegreatestcocktailapp.ui.theme.TheGreatestCocktailAppTheme
 
 class DetailCocktailActivity : ComponentActivity() {
@@ -24,12 +21,15 @@ class DetailCocktailActivity : ComponentActivity() {
         setContent {
             TheGreatestCocktailAppTheme {
                 Scaffold(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.Companion.fillMaxSize(),
                     snackbarHost = {
                         SnackbarHost(snackbarHostState)
                     }
-                    ) { innerPadding ->
-                    DetailCocktailScreen(modifier = Modifier.padding(innerPadding), snackbarHostState )
+                ) { innerPadding ->
+                    DetailCocktailScreen(
+                        modifier = Modifier.Companion.padding(innerPadding),
+                        snackbarHostState
+                    )
                 }
             }
         }
