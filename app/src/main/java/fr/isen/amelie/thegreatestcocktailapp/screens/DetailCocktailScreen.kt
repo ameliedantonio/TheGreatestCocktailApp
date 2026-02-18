@@ -47,14 +47,14 @@ fun DetailCocktailScreen(modifier: Modifier, snackbarHostState: SnackbarHostStat
         topBar = {
             TopAppBar(snackbarHostState)
         },
-        containerColor = Color(0xFFF4E4C1)
+        containerColor = Color(0xFFFFE5E5)
     ) { innerPadding ->
         Column(
             modifier
                 .padding(innerPadding)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(all = 16.dp),
+                .padding(all = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
@@ -70,7 +70,7 @@ fun DetailCocktailScreen(modifier: Modifier, snackbarHostState: SnackbarHostStat
                 text = "Spritz",
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFFFF9800), //ou 0xFFFF6F00
+                color = Color.Black, //ou 0xFFFF9800
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Categorie : Cocktail")
@@ -87,7 +87,7 @@ fun DetailCocktailScreen(modifier: Modifier, snackbarHostState: SnackbarHostStat
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(8.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFFFF8E1)
+                    containerColor = Color(0xFFFFF0F2)
                 )
             ) {
                 Column(
@@ -115,7 +115,7 @@ fun DetailCocktailScreen(modifier: Modifier, snackbarHostState: SnackbarHostStat
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(8.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFFFF8E1)
+                    containerColor = Color(0xFFFFF0F2)
                 )
             ) {
                 Column(
@@ -138,15 +138,18 @@ fun DetailCocktailScreen(modifier: Modifier, snackbarHostState: SnackbarHostStat
 @kotlin.OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBar(
-    snakebarHostState: SnackbarHostState) {
+    snackbarHostState: SnackbarHostState) {
     CenterAlignedTopAppBar(
         title = {
-            Text(text = "Random")
+            Text(text = "Cocktail du moment",
+            fontWeight = FontWeight.Bold, // gras
+            fontSize = 24.sp
+            )
         },
 
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(0xFFFF9800), // couleur de fond
-            titleContentColor = Color.White,    // couleur du texte
+            containerColor = Color(0xFF891E1E), // couleur de fond
+            titleContentColor = Color(0xFFFFCDD2),    // couleur du texte
             actionIconContentColor = Color.White
         ),
         actions = {
@@ -166,14 +169,14 @@ fun TopAppBar(
 //                        Toast.LENGTH_SHORT
 //                    ).show()
                     snackbarScope.launch {
-                        snakebarHostState.showSnackbar(if (isFav.value) added else removed)
+                        snackbarHostState.showSnackbar(if (isFav.value) added else removed)
                     }
                 }
             ) {
                 Icon(
                     imageVector = if (isFav.value) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = "fav",
-                    tint = if (isFav.value) Color.Red else Color.Gray
+                    tint = if (isFav.value) Color(0xFFFFCDD2) else Color.White
                 )
             }
         }

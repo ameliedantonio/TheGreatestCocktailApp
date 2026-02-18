@@ -25,9 +25,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.NavigationBarDefaults
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import fr.isen.amelie.thegreatestcocktailapp.screens.CategoriesScreen
 import fr.isen.amelie.thegreatestcocktailapp.screens.DetailCocktailScreen
 import fr.isen.amelie.thegreatestcocktailapp.ui.theme.TheGreatestCocktailAppTheme
+import fr.isen.amelie.thegreatestcocktailapp.screens.DrinksScreen
+
+
 
 enum class NavigationItem(
     val title: String,
@@ -39,6 +47,11 @@ enum class NavigationItem(
     Fav(title="Favoris", Icons.Default.Favorite, route="fav"),
 }
 
+// Pour avoir la bottombar sur la page DrinksScreen
+object Routes {
+    const val DRINKS = "drinks/{category}"
+    fun drinks(category: String) = "drinks/$category"
+}
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +67,9 @@ class MainActivity : ComponentActivity() {
                         SnackbarHost(snackbarHostState)
                     },
                     bottomBar = {
-                        NavigationBar {
+                        NavigationBar (
+                            containerColor = Color(0xFF891E1E) //rouge bordeaux
+                        ) {
                             NavigationItem.entries.forEach { navigationItem ->
                                 NavigationBarItem(
                                     selected = currentNavigationItem.value == navigationItem,
@@ -67,7 +82,14 @@ class MainActivity : ComponentActivity() {
                                     },
                                     icon = {
                                         Icon(navigationItem.icon, contentDescription = "")
-                                    }
+                                    },
+                                    colors = NavigationBarItemDefaults.colors(
+                                        selectedIconColor = Color.White,          // icône sélectionnée
+                                        selectedTextColor = Color(0xFFFFCDD2),          // texte sélectionné
+                                        unselectedIconColor = Color(0xFFFFCDD2),    // icône non sélectionnée
+                                        unselectedTextColor = Color(0xFFFFCDD2),    // texte non sélectionné
+                                        indicatorColor = Color(0xFFFFCDD2)        // fond de l’élément sélectionné (optionnel)
+                                    )
                                 )
                             }
                         }
@@ -78,6 +100,7 @@ class MainActivity : ComponentActivity() {
                         //modifier = Modifier.padding(innerPadding),
                         startDestination = startNavigationItem.route
                     ) {
+                        // La bottombar (3 boutons)
                         NavigationItem.entries.forEach { navigationItem ->
                             composable (navigationItem.route) {
                                 when (navigationItem) {
@@ -89,11 +112,26 @@ class MainActivity : ComponentActivity() {
                                     NavigationItem.List -> CategoriesScreen(
                                         Modifier.padding(
                                             paddingValues = innerPadding
-                                        ), snackbarHostState
+                                        ), snackbarHostState,
+                                        // Pour la bottombar dans DrinksScreen
+                                        onCategoryClick = { category ->
+                                            navController.navigate(Routes.drinks(category))
+                                        }
                                     )
                                     NavigationItem.Fav -> { }
                                 }
                             }
+                        }
+                        composable(
+                            route = Routes.DRINKS,
+                            arguments = listOf(navArgument("category") { type = NavType.StringType })
+                        ) { backStackEntry ->
+                            val category = backStackEntry.arguments?.getString("category") ?: ""
+                            DrinksScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                category = category,
+                                snackbarHostState = snackbarHostState
+                            )
                         }
                     }
                 }

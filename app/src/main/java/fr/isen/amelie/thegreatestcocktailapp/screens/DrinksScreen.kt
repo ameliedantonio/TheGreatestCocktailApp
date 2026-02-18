@@ -11,7 +11,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -22,39 +27,59 @@ import androidx.compose.ui.unit.sp
 import fr.isen.amelie.thegreatestcocktailapp.activities.DetailCocktailActivity
 
 @Composable
-fun DrinksScreen(modifier: Modifier, category: String) {
-    val drinks : List<String> = listOf(
+fun DrinksScreen(modifier: Modifier, category: String, snackbarHostState: SnackbarHostState) {
+    val drinks: List<String> = listOf(
         "Mojito",
         "Negroni",
         "Blue Lagoon",
         "Cuba Libre"
     )
 
-    LazyColumn(modifier
-        .fillMaxSize()
-        .background(brush = Brush.linearGradient(colors = listOf(Color(0xFFFF9800), Color(0xFFFF9800))))
-        .padding(all= 16.dp),
-        verticalArrangement = Arrangement.spacedBy(space = 16.dp)) {
-        item {
-            Text(text = category, color = Color.White, fontSize = 50.sp)
-        }
-
-        items(items=drinks) { drink ->
-            val context = LocalContext.current
-            Button (onClick = {
-                val intent = Intent(context, DetailCocktailActivity::class.java)
-                context.startActivity(intent)},
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(size = 25.dp),
-                colors = ButtonColors(
-                    containerColor = Color.White.copy(alpha = 0.3f),
-                    contentColor = Color.White,
-                    disabledContainerColor = Color.Unspecified,
-                    disabledContentColor = Color.Unspecified
+    Scaffold(
+        topBar = {
+            TopAppBar2(snackbarHostState, "Drinks List")
+        },
+        containerColor = Color(0xFF891E1E)
+    ) { innerPadding ->
+        LazyColumn(
+            modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFFFFCDD2),
+                            Color(0xFFFFF0F2)
+                        )
+                    )
                 )
-            ) {
-                Text(text = drink, fontSize = 30.sp)
+                .padding(innerPadding)
+                .padding(all = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(space = 16.dp)
+        ) {
+            item {
+                Text(text = category, color = Color(0xFF891E1E), fontSize = 50.sp)
+            }
+
+            items(items = drinks) { drink ->
+                val context = LocalContext.current
+                Button(
+                    onClick = {
+                        val intent = Intent(context, DetailCocktailActivity::class.java)
+                        context.startActivity(intent)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(size = 25.dp),
+                    colors = ButtonColors(
+                        containerColor = Color.White.copy(alpha = 0.3f),
+                        contentColor = Color(0xFF891E1E),
+                        disabledContainerColor = Color.Unspecified,
+                        disabledContentColor = Color.Unspecified
+                    )
+                ) {
+                    Text(text = drink, fontSize = 30.sp)
+                }
             }
         }
     }
 }
+

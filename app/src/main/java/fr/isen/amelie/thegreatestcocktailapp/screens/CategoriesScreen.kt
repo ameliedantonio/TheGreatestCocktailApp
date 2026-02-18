@@ -32,7 +32,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.platform.LocalContext
 import fr.isen.amelie.thegreatestcocktailapp.activities.DrinksActivity
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoriesScreen(
@@ -52,9 +51,9 @@ fun CategoriesScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar2(snackbarHostState)
+            TopAppBar2(snackbarHostState, "Categories")
         },
-        containerColor = Color(0xFFF4E4C1)
+        containerColor = Color(0xFFFFE5E5)
     ) { innerPadding ->
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -74,9 +73,11 @@ fun CategoriesScreen(
                         .aspectRatio(1f)
                         .padding(8.dp)
                         .clickable {
-                            val intent = Intent(context, DrinksActivity::class.java)
+                            onCategoryClick(category)
+                            /*val intent = Intent(context, DrinksActivity::class.java)
                             intent.putExtra("category", category)
                             context.startActivity(intent)
+                             */
                         },
                     shape = RoundedCornerShape(32.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 14.dp),
@@ -113,27 +114,33 @@ fun CategoriesScreen(
 
 fun getCategoryColor(category: String): Color {
     return when (category) {
-        "Beer" -> Color(0xFFFFF176)
-        "Cocktail" -> Color(0xFFFF8A65)
-        "Cocoa" -> Color(0xFF8D6E63)
-        "Coffee" -> Color(0xFFFFCDD2)
-        "Shot" -> Color(0xFFBA68C8)
-        "Soft Drink" -> Color(0xFF4FC3F7)
-        else -> Color.LightGray
+        "Beer" -> Color(0xFFFFF0F2)
+        "Cocktail" -> Color(0xFFFFF0F2)
+        "Cocoa" -> Color(0xFFFFF0F2)
+        "Coffee" -> Color(0xFFFFF0F2)
+        "Shot" -> Color(0xFFFFF0F2)
+        "Soft Drink" -> Color(0xFFFFF0F2)
+        else -> Color.White
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar2(snakebarHostState: SnackbarHostState) {
+fun TopAppBar2(
+    snackbarHostState: SnackbarHostState,
+    title: String
+) {
     CenterAlignedTopAppBar(
         title = {
-            Text(text = "Categories")
+            Text(text = title,
+            fontWeight = FontWeight.Bold, // gras
+            fontSize = 24.sp
+            )
         },
 
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(0xFFFF9800), // couleur de fond
-            titleContentColor = Color.White,    // couleur du texte
+            containerColor = Color(0xFF891E1E), // couleur de fond
+            titleContentColor = Color(0xFFFFCDD2),    // couleur du texte
             actionIconContentColor = Color.White
         )
 
