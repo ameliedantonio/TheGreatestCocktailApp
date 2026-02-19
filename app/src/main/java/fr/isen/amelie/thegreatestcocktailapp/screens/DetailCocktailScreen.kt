@@ -37,15 +37,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import fr.isen.amelie.thegreatestcocktailapp.R
 import kotlinx.coroutines.launch
+import androidx.navigation.NavController
+import android.app.Activity
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import fr.isen.amelie.thegreatestcocktailapp.R
+
 
 @Composable
-fun DetailCocktailScreen(modifier: Modifier, snackbarHostState: SnackbarHostState) {
+fun DetailCocktailScreen(
+    modifier: Modifier,
+    snackbarHostState: SnackbarHostState,
+    navController: NavController,
+    showBackButton: Boolean = true
+) {
     var isFavorite by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
-            TopAppBar(snackbarHostState)
+            TopAppBar(
+                snackbarHostState = snackbarHostState,
+                navController = navController,
+                showBackButton = showBackButton
+            )
         },
         containerColor = Color(0xFFFFE5E5)
     ) { innerPadding ->
@@ -73,11 +89,11 @@ fun DetailCocktailScreen(modifier: Modifier, snackbarHostState: SnackbarHostStat
                 color = Color.Black, //ou 0xFFFF9800
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Categorie : Cocktail")
-            Text(text = "Verre : Verre à vin")
+            Text(text = "Category : Cocktail")
+            Text(text = "Served in: Wine Glass")
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Ingrédients",
+                text = "Ingredients",
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
             )
@@ -105,7 +121,7 @@ fun DetailCocktailScreen(modifier: Modifier, snackbarHostState: SnackbarHostStat
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Recette",
+                text = "Recipe",
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
             )
@@ -138,26 +154,58 @@ fun DetailCocktailScreen(modifier: Modifier, snackbarHostState: SnackbarHostStat
 @kotlin.OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBar(
-    snackbarHostState: SnackbarHostState) {
+    snackbarHostState: SnackbarHostState,
+    navController : NavController,
+    showBackButton: Boolean
+) {
     CenterAlignedTopAppBar(
         title = {
-            Text(text = "Cocktail du moment",
+            Text(text = "Cocktail Spotlight",
             fontWeight = FontWeight.Bold, // gras
             fontSize = 24.sp
             )
         },
 
+        // Flèche retour à gauche si showbackButton==true
+        navigationIcon = {
+            if (showBackButton) {
+                /*
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Retour",
+                        tint = Color.White
+                 */
+                val activity = (LocalContext.current as? Activity)
+
+                IconButton(onClick = {
+                    val popped = navController.popBackStack()
+                    if (!popped) {
+                        activity?.finish()
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Retour",
+                        tint = Color.White
+                    )
+                }
+            }
+        },
+
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color(0xFF891E1E), // couleur de fond
             titleContentColor = Color(0xFFFFCDD2),    // couleur du texte
+            navigationIconContentColor = Color.White,
             actionIconContentColor = Color.White
         ),
         actions = {
-            val added = "Ajouté aux favoris"
-            val removed = "Retiré des favoris"
+            val added = "Added to your favorites"
+            val removed = "Removed from your favorites"
 //            val context = LocalContext.current
             val snackbarScope = rememberCoroutineScope ()
             val isFav = remember { mutableStateOf(false) }
+
             IconToggleButton(
                 isFav.value,
                 onCheckedChange = {

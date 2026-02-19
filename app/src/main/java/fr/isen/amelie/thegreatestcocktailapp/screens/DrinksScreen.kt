@@ -27,7 +27,11 @@ import androidx.compose.ui.unit.sp
 import fr.isen.amelie.thegreatestcocktailapp.activities.DetailCocktailActivity
 
 @Composable
-fun DrinksScreen(modifier: Modifier, category: String, snackbarHostState: SnackbarHostState) {
+fun DrinksScreen(
+    modifier: Modifier,
+    category: String,
+    snackbarHostState: SnackbarHostState
+) {
     val drinks: List<String> = listOf(
         "Mojito",
         "Negroni",
@@ -37,7 +41,10 @@ fun DrinksScreen(modifier: Modifier, category: String, snackbarHostState: Snackb
 
     Scaffold(
         topBar = {
-            TopAppBar2(snackbarHostState, "Drinks List")
+            TopAppBar2(
+                snackbarHostState,
+                "Drinks List"
+            )
         },
         containerColor = Color(0xFF891E1E)
     ) { innerPadding ->

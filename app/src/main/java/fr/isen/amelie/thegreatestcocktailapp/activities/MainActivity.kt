@@ -42,9 +42,9 @@ enum class NavigationItem(
     val icon: ImageVector,
     val route: String
 ) {
-    Home(title="A la une", Icons.Default.Home, route="home"),
+    Home(title="Featured", Icons.Default.Home, route="home"),
     List(title="Categories", Icons.Default.Menu, route="list"),
-    Fav(title="Favoris", Icons.Default.Favorite, route="fav"),
+    Fav(title="Favorites", Icons.Default.Favorite, route="fav"),
 }
 
 // Pour avoir la bottombar sur la page DrinksScreen
@@ -105,9 +105,10 @@ class MainActivity : ComponentActivity() {
                             composable (navigationItem.route) {
                                 when (navigationItem) {
                                     NavigationItem.Home -> DetailCocktailScreen(
-                                        Modifier.padding(
-                                            paddingValues = innerPadding
-                                        ), snackbarHostState
+                                        Modifier.padding(paddingValues = innerPadding),
+                                        snackbarHostState = snackbarHostState,
+                                        navController = navController,
+                                        showBackButton = false
                                     )
                                     NavigationItem.List -> CategoriesScreen(
                                         Modifier.padding(

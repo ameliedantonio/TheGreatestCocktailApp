@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
 import fr.isen.amelie.thegreatestcocktailapp.screens.DetailCocktailScreen
 import fr.isen.amelie.thegreatestcocktailapp.ui.theme.TheGreatestCocktailAppTheme
 
@@ -20,6 +21,7 @@ class DetailCocktailActivity : ComponentActivity() {
         val snackbarHostState = SnackbarHostState()
         setContent {
             TheGreatestCocktailAppTheme {
+                val navController = rememberNavController()
                 Scaffold(
                     modifier = Modifier.Companion.fillMaxSize(),
                     snackbarHost = {
@@ -28,7 +30,9 @@ class DetailCocktailActivity : ComponentActivity() {
                 ) { innerPadding ->
                     DetailCocktailScreen(
                         modifier = Modifier.Companion.padding(innerPadding),
-                        snackbarHostState
+                        snackbarHostState = snackbarHostState,
+                        navController = navController,
+                        showBackButton = true
                     )
                 }
             }
