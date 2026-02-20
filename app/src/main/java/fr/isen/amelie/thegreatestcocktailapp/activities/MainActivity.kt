@@ -35,6 +35,7 @@ import fr.isen.amelie.thegreatestcocktailapp.screens.DetailCocktailScreen
 import fr.isen.amelie.thegreatestcocktailapp.ui.theme.TheGreatestCocktailAppTheme
 import fr.isen.amelie.thegreatestcocktailapp.screens.DrinksScreen
 import android.net.Uri
+import fr.isen.amelie.thegreatestcocktailapp.screens.FavoriteScreen
 
 
 enum class NavigationItem(
@@ -119,7 +120,9 @@ class MainActivity : ComponentActivity() {
                                             navController.navigate(Routes.drinks(category)) // category.replace(" ", "_")
                                         }
                                     )
-                                    NavigationItem.Fav -> { }
+                                    NavigationItem.Fav -> {
+                                        FavoriteScreen(Modifier.padding(innerPadding), snackbarHostState)
+                                    }
                                 }
                             }
                         }

@@ -63,6 +63,7 @@ import androidx.compose.ui.res.colorResource
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePreviewHandler
 import fr.isen.amelie.thegreatestcocktailapp.R
+import fr.isen.amelie.thegreatestcocktailapp.activities.SharedPreferenceHelper
 import fr.isen.amelie.thegreatestcocktailapp.network.DrinkModel
 import fr.isen.amelie.thegreatestcocktailapp.network.Drinks
 import fr.isen.amelie.thegreatestcocktailapp.network.NetworkManager
@@ -108,7 +109,8 @@ fun DetailCocktailScreen(
             TopAppBar(
                 snackbarHostState = snackbarHostState,
                 navController = navController,
-                showBackButton = showBackButton
+                showBackButton = showBackButton,
+                drinkId
             )
         },
         containerColor = colorResource(R.color.rose_clair),
@@ -222,7 +224,8 @@ fun DetailCocktailScreen(
 fun TopAppBar(
     snackbarHostState: SnackbarHostState,
     navController : NavController,
-    showBackButton: Boolean
+    showBackButton: Boolean,
+    drinkId: String? = null
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -269,8 +272,13 @@ fun TopAppBar(
             val added = "Added to your favorites"
             val removed = "Removed from your favorites"
 //            val context = LocalContext.current
+
             val snackbarScope = rememberCoroutineScope ()
-            val isFav = remember { mutableStateOf(false) }
+
+            val context = LocalContext.current
+            val sharedPreferences = SharedPreferenceHelper(context)
+            val drinkList = sharedPreferences.getFavoriteList()
+            val isFav = remember { mutableStateOf(getFavoritesStatusForID(drinkId, drinkList)) }
 
             IconToggleButton(
                 isFav.value,
@@ -284,6 +292,14 @@ fun TopAppBar(
 //                        if (isFav.value) added else removed,
 //                        Toast.LENGTH_SHORT
 //                    ).show()
+                    }
+
+                    if (drinkId != null) {
+                        updateFavoriteList(
+                            drinkId.toString(),
+                            isFav.value,
+                            sharedPreferences,
+                            drinkList)
                     }
                 }
             ) {
@@ -299,3 +315,24 @@ fun TopAppBar(
     )
 }
 
+fun getFavoritesStatusForID(drinkId: String?, list: ArrayList<String>): Boolean {
+    for (id in list) {
+        if (drinkId == id) {
+            return true
+        }
+    }
+    return false
+}
+
+
+fun updateFavoriteList(drinkId: String,
+                       shouldBeAdded: Boolean,
+                       sharedPreferenceHelper: SharedPreferenceHelper,
+                       list: ArrayList<String>) {
+    if (shouldBeAdded) {
+        list.add(drinkId)
+    } else {
+        list.remove(drinkId)
+    }
+    sharedPreferenceHelper.saveFavoriteList(list)
+}
