@@ -19,16 +19,14 @@ data class DrinkModel (
 
     @SerializedName(value = "strInstructions") val instructions: String = "",
 
-    @SerializedName(value = "strIngredient1") val ingredient1: String = "",
-    @SerializedName(value = "strIngredient2") val ingredient2: String = "",
+    @SerializedName(value = "strIngredient1") val ingredient1: String? = null,
+    @SerializedName(value = "strIngredient2") val ingredient2: String? = null,
 
-    @SerializedName(value = "strMeasure1") val measure1: String = "",
-    @SerializedName(value = "strMeasure2") val measure2: String = "",
+    @SerializedName(value = "strMeasure1") val measure1: String? = null,
+    @SerializedName(value = "strMeasure2") val measure2: String? = null,
 
     @SerializedName(value = "strDrinkThumb") val imageURL: String? = null,
 
-
-    // Optionnels
     @SerializedName(value = "strIngredient3") val ingredient3: String? = null,
     @SerializedName(value = "strIngredient4") val ingredient4: String? = null,
     @SerializedName(value = "strIngredient5") val ingredient5: String? = null,
@@ -61,8 +59,8 @@ data class DrinkModel (
 
     fun getIngredients(): List<Pair<String, String>> {
         val list = listOf(
-            ingredient1 to measure1,
-            ingredient2 to measure2,
+            (ingredient1 ?: "") to (measure1 ?: ""),
+            (ingredient2 ?: "") to (measure2 ?: ""),
             (ingredient3 ?: "") to (measure3 ?: ""),
             (ingredient4 ?: "") to (measure4 ?: ""),
             (ingredient5 ?: "") to (measure5 ?: ""),

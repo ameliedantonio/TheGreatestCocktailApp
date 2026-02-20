@@ -22,6 +22,7 @@ class DetailCocktailActivity : ComponentActivity() {
         setContent {
             TheGreatestCocktailAppTheme {
                 val navController = rememberNavController()
+                val drinkId = intent.getStringExtra("drinkId") ?: ""
                 Scaffold(
                     modifier = Modifier.Companion.fillMaxSize(),
                     snackbarHost = {
@@ -32,7 +33,8 @@ class DetailCocktailActivity : ComponentActivity() {
                         modifier = Modifier.Companion.padding(innerPadding),
                         snackbarHostState = snackbarHostState,
                         navController = navController,
-                        showBackButton = true
+                        showBackButton = true,
+                        drinkId = drinkId
                     )
                 }
             }

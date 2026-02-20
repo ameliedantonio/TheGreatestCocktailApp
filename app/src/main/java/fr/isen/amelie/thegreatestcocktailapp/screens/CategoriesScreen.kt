@@ -59,17 +59,15 @@ fun CategoriesScreen(
         val call: Call<Drinks> = NetworkManager.api.getListCategory()
         call.enqueue(object : Callback<Drinks> {
             override fun onResponse(p0: Call<Drinks?>, p1: Response<Drinks?>) {
-                val list = p1.body()?.drinks
+                categories.value = p1.body()?.drinks
                     ?.map { it.category }          // récupère strCategory -> category
                     ?.filter { it.isNotBlank() }   // évite les vides
                     ?.distinct()                   // évite doublons
                     ?: emptyList()
-
-                categories.value = list
             }
 
             override fun onFailure(p0: Call<Drinks?>, p1: Throwable) {
-                Log.e("CategoriesScreen", p1.message.toString())
+                Log.e("error", p1.message.toString())
             }
         })
     }

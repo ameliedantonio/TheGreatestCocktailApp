@@ -98,6 +98,7 @@ fun DrinksScreen(
                 Button(
                     onClick = {
                         val intent = Intent(context, DetailCocktailActivity::class.java)
+                        intent.putExtra("drinkId", drink.id)
                         context.startActivity(intent)
                     },
                     modifier = Modifier.fillMaxWidth(),

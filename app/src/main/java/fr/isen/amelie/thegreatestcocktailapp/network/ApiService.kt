@@ -13,4 +13,8 @@ interface ApiService {
 
     @GET("filter.php")
     fun getDrinksByCategory(@Query(value="c") category: String): Call<Drinks>
+
+    @GET("lookup.php")
+    fun getDrinksById(@Query(value="i") id: String): Call<Drinks>
+
 }

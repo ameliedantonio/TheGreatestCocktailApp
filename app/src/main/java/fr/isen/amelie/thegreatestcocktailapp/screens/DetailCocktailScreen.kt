@@ -73,13 +73,21 @@ fun DetailCocktailScreen(
     modifier: Modifier,
     snackbarHostState: SnackbarHostState,
     navController: NavController,
+    drinkId: String = "",
     showBackButton: Boolean = true
 
 ) {
     val drink: MutableState<DrinkModel> = remember {mutableStateOf(value = DrinkModel())}
 
     LaunchedEffect(Unit) {
-        val call: Call<Drinks> = NetworkManager.api.getRandomCocktail()
+        val call: Call<Drinks> = if (drinkId.isNotEmpty()) {
+            //cas "Categories/DrinksScreen" → détail du cocktail cliqué
+            NetworkManager.api.getDrinksById(drinkId)
+        } else {
+            //cas "À la une" → aléatoire
+            NetworkManager.api.getRandomCocktail()
+        }
+
         call.enqueue(object : Callback<Drinks> {
             override fun onResponse(p0: Call<Drinks?>, p1: Response<Drinks?>) {
                 drink.value = p1.body()?.drinks?.first() ?: DrinkModel()
