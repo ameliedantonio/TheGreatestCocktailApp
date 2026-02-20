@@ -2,6 +2,7 @@ package fr.isen.amelie.thegreatestcocktailapp.screens
 
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,8 +31,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import fr.isen.amelie.thegreatestcocktailapp.R
 import fr.isen.amelie.thegreatestcocktailapp.activities.DrinksActivity
+import fr.isen.amelie.thegreatestcocktailapp.network.Drinks
+import fr.isen.amelie.thegreatestcocktailapp.network.NetworkManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,21 +52,33 @@ fun CategoriesScreen(
     snackbarHostState: SnackbarHostState,
     onCategoryClick: (String) -> Unit = {}
 ) {
-    // Partie 3
-    val categories: List<String> = listOf(
-        "Beer",
-        "Cocktail",
-        "Cocoa",
-        "Coffee",
-        "Shot",
-        "Soft Drink"
-    )
+
+    val categories: MutableState<List<String>> = remember{ mutableStateOf(emptyList()) }
+
+    LaunchedEffect (Unit) {
+        val call: Call<Drinks> = NetworkManager.api.getListCategory()
+        call.enqueue(object : Callback<Drinks> {
+            override fun onResponse(p0: Call<Drinks?>, p1: Response<Drinks?>) {
+                val list = p1.body()?.drinks
+                    ?.map { it.category }          // récupère strCategory -> category
+                    ?.filter { it.isNotBlank() }   // évite les vides
+                    ?.distinct()                   // évite doublons
+                    ?: emptyList()
+
+                categories.value = list
+            }
+
+            override fun onFailure(p0: Call<Drinks?>, p1: Throwable) {
+                Log.e("CategoriesScreen", p1.message.toString())
+            }
+        })
+    }
 
     Scaffold(
         topBar = {
             TopAppBar2(snackbarHostState, "Categories")
         },
-        containerColor = Color(0xFFFFE5E5)
+        containerColor = colorResource(id = R.color.rose_clair)
     ) { innerPadding ->
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -65,9 +89,9 @@ fun CategoriesScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(categories.size) { index ->
-                val category = categories[index]
-                val context = LocalContext.current
+            items(categories.value.size) { index ->
+                val category = categories.value[index]
+                //val context = LocalContext.current
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -81,9 +105,8 @@ fun CategoriesScreen(
                              */
                         },
                     shape = RoundedCornerShape(32.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 14.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = getCategoryColor(category)
+                        containerColor = colorResource(id = R.color.rose_pale)
                     )
                 ) {
                     // voile glass
@@ -113,17 +136,6 @@ fun CategoriesScreen(
     }
 }
 
-fun getCategoryColor(category: String): Color {
-    return when (category) {
-        "Beer" -> Color(0xFFFFF0F2)
-        "Cocktail" -> Color(0xFFFFF0F2)
-        "Cocoa" -> Color(0xFFFFF0F2)
-        "Coffee" -> Color(0xFFFFF0F2)
-        "Shot" -> Color(0xFFFFF0F2)
-        "Soft Drink" -> Color(0xFFFFF0F2)
-        else -> Color.White
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -140,8 +152,8 @@ fun TopAppBar2(
         },
 
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(0xFF891E1E), // couleur de fond
-            titleContentColor = Color(0xFFFFCDD2),    // couleur du texte
+            containerColor = colorResource(id = R.color.bordeaux), // couleur de fond
+            titleContentColor = colorResource(id = R.color.rose), // couleur du texte
             actionIconContentColor = Color.White
         )
 

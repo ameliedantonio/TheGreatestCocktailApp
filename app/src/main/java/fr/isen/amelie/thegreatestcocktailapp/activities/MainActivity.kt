@@ -34,7 +34,7 @@ import fr.isen.amelie.thegreatestcocktailapp.screens.CategoriesScreen
 import fr.isen.amelie.thegreatestcocktailapp.screens.DetailCocktailScreen
 import fr.isen.amelie.thegreatestcocktailapp.ui.theme.TheGreatestCocktailAppTheme
 import fr.isen.amelie.thegreatestcocktailapp.screens.DrinksScreen
-
+import android.net.Uri
 
 
 enum class NavigationItem(
@@ -50,7 +50,7 @@ enum class NavigationItem(
 // Pour avoir la bottombar sur la page DrinksScreen
 object Routes {
     const val DRINKS = "drinks/{category}"
-    fun drinks(category: String) = "drinks/$category"
+    fun drinks(category: String) = "drinks/${Uri.encode(category)}"
 }
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,7 +116,7 @@ class MainActivity : ComponentActivity() {
                                         ), snackbarHostState,
                                         // Pour la bottombar dans DrinksScreen
                                         onCategoryClick = { category ->
-                                            navController.navigate(Routes.drinks(category))
+                                            navController.navigate(Routes.drinks(category)) // category.replace(" ", "_")
                                         }
                                     )
                                     NavigationItem.Fav -> { }
@@ -127,7 +127,10 @@ class MainActivity : ComponentActivity() {
                             route = Routes.DRINKS,
                             arguments = listOf(navArgument("category") { type = NavType.StringType })
                         ) { backStackEntry ->
-                            val category = backStackEntry.arguments?.getString("category") ?: ""
+
+                            val categoryEncoded = backStackEntry.arguments?.getString("category") ?: ""
+                            val category = android.net.Uri.decode(categoryEncoded)
+
                             DrinksScreen(
                                 modifier = Modifier.padding(innerPadding),
                                 category = category,

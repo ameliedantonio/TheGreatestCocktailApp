@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Icon
@@ -40,11 +41,31 @@ import androidx.compose.runtime.setValue
 import kotlinx.coroutines.launch
 import androidx.navigation.NavController
 import android.app.Activity
+import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.runtime.LaunchedEffect
+import retrofit2.Callback
+import retrofit2.Call
+import retrofit2.Response
+import androidx.compose.runtime.MutableState
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
+import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePreviewHandler
 import fr.isen.amelie.thegreatestcocktailapp.R
+import fr.isen.amelie.thegreatestcocktailapp.network.DrinkModel
+import fr.isen.amelie.thegreatestcocktailapp.network.Drinks
+import fr.isen.amelie.thegreatestcocktailapp.network.NetworkManager
 
 
 @Composable
@@ -53,8 +74,27 @@ fun DetailCocktailScreen(
     snackbarHostState: SnackbarHostState,
     navController: NavController,
     showBackButton: Boolean = true
+
 ) {
+    val drink: MutableState<DrinkModel> = remember {mutableStateOf(value = DrinkModel())}
+
+    LaunchedEffect(Unit) {
+        val call: Call<Drinks> = NetworkManager.api.getRandomCocktail()
+        call.enqueue(object : Callback<Drinks> {
+            override fun onResponse(p0: Call<Drinks?>, p1: Response<Drinks?>) {
+                drink.value = p1.body()?.drinks?.first() ?: DrinkModel()
+            }
+
+            override fun onFailure(p0: Call<Drinks?>, p1: Throwable) {
+                Log.e("error", p1.message.toString())
+            }
+        })
+    }
+
     var isFavorite by remember { mutableStateOf(false) }
+
+    val ingredients = drink.value.getIngredients()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -63,7 +103,7 @@ fun DetailCocktailScreen(
                 showBackButton = showBackButton
             )
         },
-        containerColor = Color(0xFFFFE5E5)
+        containerColor = colorResource(R.color.rose_clair),
     ) { innerPadding ->
         Column(
             modifier
@@ -73,24 +113,27 @@ fun DetailCocktailScreen(
                 .padding(all = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painterResource(id = R.drawable.spritz),
-                contentDescription = "photo spritz",
+            AsyncImage(
+                model = drink.value.imageURL,
+                contentDescription = drink.value.name,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .size(size = 300.dp)
-                //contentScale = ContentScale.Crop
+                    .clip(CircleShape)
+                    .size(size = 300.dp),
+                contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Spritz",
+                text = drink.value.name,
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black, //ou 0xFFFF9800
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Category : Cocktail")
-            Text(text = "Served in: Wine Glass")
+            Text(text = "Category : " + drink.value.category)
+            Text(text = "Type of glass : " + drink.value.glass)
+            Text(text = drink.value.alcoholic)
+
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Ingredients",
@@ -98,12 +141,13 @@ fun DetailCocktailScreen(
                 fontSize = 20.sp
             )
             Spacer(modifier = Modifier.height(8.dp))
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(8.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFFFF0F2)
+                    containerColor = colorResource(id = R.color.rose_pale)
                 )
             ) {
                 Column(
@@ -112,11 +156,25 @@ fun DetailCocktailScreen(
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("• 6 cl de Prosecco")
-                    Text("• 4 cl d’Aperol")
-                    Text("• 2 cl d’eau gazeuse")
-                    Text("• Glaçons")
-                    Text("• Tranche d’orange")
+                    if (ingredients.isEmpty()) {
+                        Text(
+                            text = "No ingredients found",
+                            color = Color(0xFF281A0D),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    } else {
+                        ingredients.forEach { (ingredient, measure) ->
+                            Text(
+                                text = "• ${measure.trim()} of ${ingredient.trim()}",
+                                color = Color(0xFF281A0D),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                            )
+                        }
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -131,7 +189,7 @@ fun DetailCocktailScreen(
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(8.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFFFF0F2)
+                    containerColor = colorResource(id = R.color.rose_pale)
                 )
             ) {
                 Column(
@@ -139,17 +197,17 @@ fun DetailCocktailScreen(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-                    Text("1.  Remplir un verre de glaçons")
-                    Text("2.  Ajouter le Prosecco")
-                    Text("3.  Ajouter l’Aperol")
-                    Text("4.  Compléter avec l’eau gazeuse")
-                    Text("5.  Mélanger doucement")
-                    Text("6.  Ajouter une tranche d’orange")
+                    Text(
+                        text = drink.value.instructions,
+                        color = Color(0xFF281A0D)
+                    )
+                        }
+                    }
                 }
             }
         }
-    }
-}
+
+
 
 @kotlin.OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -194,8 +252,8 @@ fun TopAppBar(
         },
 
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(0xFF891E1E), // couleur de fond
-            titleContentColor = Color(0xFFFFCDD2),    // couleur du texte
+            containerColor = colorResource(id = R.color.bordeaux), // couleur de fond
+            titleContentColor = colorResource(id = R.color.rose), // couleur du texte
             navigationIconContentColor = Color.White,
             actionIconContentColor = Color.White
         ),
@@ -210,21 +268,23 @@ fun TopAppBar(
                 isFav.value,
                 onCheckedChange = {
                     isFav.value = !isFav.value
+                    snackbarScope.launch {
+                        snackbarHostState.showSnackbar(if (isFav.value) added else removed)
                     // TOAST
 //                    Toast.makeText(
 //                        context,
 //                        if (isFav.value) added else removed,
 //                        Toast.LENGTH_SHORT
 //                    ).show()
-                    snackbarScope.launch {
-                        snackbarHostState.showSnackbar(if (isFav.value) added else removed)
                     }
                 }
             ) {
                 Icon(
                     imageVector = if (isFav.value) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = "fav",
-                    tint = if (isFav.value) Color(0xFFFFCDD2) else Color.White
+                    tint = if (isFav.value)
+                        colorResource(id = R.color.rose)
+                    else Color.White
                 )
             }
         }
