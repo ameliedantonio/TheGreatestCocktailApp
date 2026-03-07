@@ -30,6 +30,8 @@ import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import androidx.compose.material.icons.filled.Search
+import fr.isen.amelie.thegreatestcocktailapp.screens.SearchScreen
 import fr.isen.amelie.thegreatestcocktailapp.screens.CategoriesScreen
 import fr.isen.amelie.thegreatestcocktailapp.screens.DetailCocktailScreen
 import fr.isen.amelie.thegreatestcocktailapp.ui.theme.TheGreatestCocktailAppTheme
@@ -45,6 +47,7 @@ enum class NavigationItem(
 ) {
     Home(title="Featured", Icons.Default.Home, route="home"),
     List(title="Categories", Icons.Default.Menu, route="list"),
+    Search(title="Search", Icons.Default.Search, route="search"),
     Fav(title="Favorites", Icons.Default.Favorite, route="fav"),
 }
 
@@ -120,8 +123,21 @@ class MainActivity : ComponentActivity() {
                                             navController.navigate(Routes.drinks(category)) // category.replace(" ", "_")
                                         }
                                     )
+                                    NavigationItem.Search -> {
+                                        SearchScreen(
+                                            modifier = Modifier.padding(innerPadding),
+                                            snackbarHostState = snackbarHostState
+                                        )
+                                    }
                                     NavigationItem.Fav -> {
-                                        FavoriteScreen(Modifier.padding(innerPadding), snackbarHostState)
+                                        FavoriteScreen(
+                                                modifier = Modifier.padding(innerPadding),
+                                                snackbarHostState = snackbarHostState,
+                                                onAddFavoriteClick = {
+                                                    navController.navigate(NavigationItem.List.route)
+                                                    currentNavigationItem.value = NavigationItem.List
+                                                }
+                                        )
                                     }
                                 }
                             }
@@ -149,61 +165,3 @@ class MainActivity : ComponentActivity() {
 
 
 
-
-
-
-
-
-
-
-
-/*
-@Composable
-fun MonImage() {
-    Image(
-        painter = painterResource(id = R.drawable.cocktails),
-        contentDescription = "Les Cocktails",
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-    )
-}
-
-
-@Composable
-fun MonBouton() {
-    Button(onClick = {
-        println("Le bouton a été cliqué!")
-    }) {
-        Text("Mon Bouton")
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Column(modifier) {
-        Row {
-            Text("first !")
-            Text(
-                text = " Hello $name!",
-                color = Color.Red,
-                fontSize = 28.sp
-            )
-        }
-
-        Text("Coucou")
-        Row {
-            Text("Ligne 3")
-            Text(
-                text = " Partie 2",
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Right,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        MonImage()
-        MonBouton()
-    }
-
-}
- */

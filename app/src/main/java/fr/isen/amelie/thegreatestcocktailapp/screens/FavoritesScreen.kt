@@ -44,6 +44,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.res.painterResource
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.ui.text.style.TextAlign
 import fr.isen.amelie.thegreatestcocktailapp.R
 import fr.isen.amelie.thegreatestcocktailapp.activities.DetailCocktailActivity
 import fr.isen.amelie.thegreatestcocktailapp.activities.SharedPreferenceHelper
@@ -57,7 +75,8 @@ import retrofit2.Response
 @Composable
 fun FavoriteScreen(
     modifier: Modifier,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    onAddFavoriteClick: () -> Unit = {}
 ) {
 
     val drinks: MutableState<List<DrinkModel>> = remember { mutableStateOf<List<DrinkModel>> (value=listOf()) }
@@ -82,9 +101,9 @@ fun FavoriteScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar2(
-                snackbarHostState,
-                "Favorites"
+            FavoritesTopAppBar(
+                title = "Favorites",
+                onAddFavoriteClick = onAddFavoriteClick
             )
         },
         containerColor = colorResource(id = R.color.bordeaux)
@@ -105,28 +124,105 @@ fun FavoriteScreen(
             verticalArrangement = Arrangement.spacedBy(space = 16.dp)
         ) {
 
+            if (drinks.value.isEmpty()) {
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 100.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.favorites_empty),
+                            contentDescription = "empty favorites",
+                            modifier = Modifier.size(200.dp)
+                        )
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        Text(
+                            text = "No favorite drink yet ? \nTap + to add one",
+                            color = colorResource(id = R.color.bordeaux),
+                            fontSize = 22.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
 
             items(drinks.value) { drink ->
                 val context = LocalContext.current
-                Button(
-                    onClick = {
-                        val intent = Intent(context, DetailCocktailActivity::class.java)
-                        intent.putExtra("drinkId", drink.id)
-                        context.startActivity(intent)
-                    },
+
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(size = 25.dp),
-                    colors = ButtonColors(
-                        containerColor = Color.White.copy(alpha = 0.3f),
-                        contentColor = colorResource(id = R.color.bordeaux),
-                        disabledContainerColor = Color.Unspecified,
-                        disabledContentColor = Color.Unspecified
-                    )
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(drink.name, fontSize = 30.sp)
+
+                    Button(
+                        onClick = {
+                            val intent = Intent(context, DetailCocktailActivity::class.java)
+                            intent.putExtra("drinkId", drink.id)
+                            context.startActivity(intent)
+                        },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(size = 25.dp),
+                        colors = ButtonColors(
+                            containerColor = Color.White.copy(alpha = 0.3f),
+                            contentColor = colorResource(id = R.color.bordeaux),
+                            disabledContainerColor = Color.Unspecified,
+                            disabledContentColor = Color.Unspecified
+                        )
+                    ) {
+                        Text(drink.name, fontSize = 30.sp)
+                    }
+                    IconButton(
+                        onClick = {
+                            val updatedFavList = sharedPreferences.getFavoriteList()
+                            updatedFavList.remove(drink.id)
+                            sharedPreferences.saveFavoriteList(updatedFavList)
+
+                            drinks.value = drinks.value.filter { it.id != drink.id }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete favorite",
+                            tint = colorResource(id = R.color.bordeaux)
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FavoritesTopAppBar(
+    title: String,
+    onAddFavoriteClick: () -> Unit
+) {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text = title,
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp
+            )
+        },
+        actions = {
+            IconButton(onClick = onAddFavoriteClick) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add favorite"
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = colorResource(id = R.color.bordeaux),
+            titleContentColor = colorResource(id = R.color.rose),
+            actionIconContentColor = Color.White
+        )
+    )
+}

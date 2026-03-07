@@ -110,7 +110,7 @@ fun DetailCocktailScreen(
                 snackbarHostState = snackbarHostState,
                 navController = navController,
                 showBackButton = showBackButton,
-                drinkId
+                drinkId = drink.value.id //pour que les fav marchent depuis featured
             )
         },
         containerColor = colorResource(R.color.rose_clair),
@@ -277,12 +277,21 @@ fun TopAppBar(
 
             val context = LocalContext.current
             val sharedPreferences = SharedPreferenceHelper(context)
-            val drinkList = sharedPreferences.getFavoriteList()
-            val isFav = remember { mutableStateOf(getFavoritesStatusForID(drinkId, drinkList)) }
+
+            //val drinkList = sharedPreferences.getFavoriteList()
+            //val isFav = remember { mutableStateOf(getFavoritesStatusForID(drinkId, drinkList)) }
+            val isFav = remember(drinkId) {
+                mutableStateOf(
+                    drinkId?.let {
+                        getFavoritesStatusForID(it, sharedPreferences.getFavoriteList())
+                    } ?: false
+                )
+            }
 
             IconToggleButton(
                 isFav.value,
-                onCheckedChange = {
+                onCheckedChange =
+                    /*{
                     isFav.value = !isFav.value
                     snackbarScope.launch {
                         snackbarHostState.showSnackbar(if (isFav.value) added else removed)
@@ -301,7 +310,27 @@ fun TopAppBar(
                             sharedPreferences,
                             drinkList)
                     }
-                }
+                }*/
+                    {
+                        val currentId = drinkId
+                        if (currentId.isNullOrEmpty()) return@IconToggleButton
+
+                        isFav.value = !isFav.value
+
+                        val drinkList = sharedPreferences.getFavoriteList()
+                        updateFavoriteList(
+                            currentId,
+                            isFav.value,
+                            sharedPreferences,
+                            drinkList
+                        )
+
+                        snackbarScope.launch {
+                            snackbarHostState.showSnackbar(
+                                if (isFav.value) "Added to your favorites" else "Removed from your favorites"
+                            )
+                        }
+                    }
             ) {
                 Icon(
                     imageVector = if (isFav.value) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
@@ -330,7 +359,10 @@ fun updateFavoriteList(drinkId: String,
                        sharedPreferenceHelper: SharedPreferenceHelper,
                        list: ArrayList<String>) {
     if (shouldBeAdded) {
-        list.add(drinkId)
+        //list.add(drinkId)
+        if (!list.contains(drinkId)) {
+            list.add(drinkId)
+        }
     } else {
         list.remove(drinkId)
     }
