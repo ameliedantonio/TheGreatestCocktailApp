@@ -14,16 +14,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TheGreatestCocktailApp">
         <activity
-            android:name=".activities.ui.theme.SharedPreferenceHelper"
-            android:exported="false"
-            android:label="@string/title_activity_shared_preference_helper"
-            android:theme="@style/Theme.TheGreatestCocktailApp" />
-        <activity
-            android:name=".activities.SharedPreferenceHelper"
-            android:exported="false"
-            android:label="@string/title_activity_shared_preference_helper"
-            android:theme="@style/Theme.TheGreatestCocktailApp" />
-        <activity
             android:name=".activities.DetailCocktailActivity"
             android:exported="false"
             android:label="@string/title_activity_detail_cocktail"

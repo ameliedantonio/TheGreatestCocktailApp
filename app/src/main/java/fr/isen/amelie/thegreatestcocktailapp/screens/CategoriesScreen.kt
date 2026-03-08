@@ -60,9 +60,9 @@ fun CategoriesScreen(
         call.enqueue(object : Callback<Drinks> {
             override fun onResponse(p0: Call<Drinks?>, p1: Response<Drinks?>) {
                 categories.value = p1.body()?.drinks
-                    ?.map { it.category }          // récupère strCategory -> category
-                    ?.filter { it.isNotBlank() }   // évite les vides
-                    ?.distinct()                   // évite doublons
+                    ?.map { it.category }
+                    ?.filter { it.isNotBlank() }
+                    ?.distinct()
                     ?: emptyList()
             }
 
@@ -89,7 +89,6 @@ fun CategoriesScreen(
         ) {
             items(categories.value.size) { index ->
                 val category = categories.value[index]
-                //val context = LocalContext.current
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -97,17 +96,13 @@ fun CategoriesScreen(
                         .padding(8.dp)
                         .clickable {
                             onCategoryClick(category)
-                            /*val intent = Intent(context, DrinksActivity::class.java)
-                            intent.putExtra("category", category)
-                            context.startActivity(intent)
-                             */
                         },
                     shape = RoundedCornerShape(32.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = colorResource(id = R.color.rose_pale)
                     )
                 ) {
-                    // voile glass
+                    // pour l'effet glass
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -124,7 +119,7 @@ fun CategoriesScreen(
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center,
                                 letterSpacing = 0.5.sp,
-                                color = Color(0xFF281A0D)
+                                color = colorResource(id = R.color.bordeaux)
                             )
                         }
                     }

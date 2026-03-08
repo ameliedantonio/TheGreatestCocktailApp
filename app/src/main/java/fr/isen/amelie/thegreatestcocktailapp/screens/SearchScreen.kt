@@ -39,7 +39,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.FilterChip
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.IconButton
+import androidx.compose.ui.text.style.TextAlign
 import fr.isen.amelie.thegreatestcocktailapp.R
 import fr.isen.amelie.thegreatestcocktailapp.activities.DetailCocktailActivity
 import fr.isen.amelie.thegreatestcocktailapp.network.DrinkModel
@@ -56,6 +60,8 @@ fun SearchScreen(
 ) {
     val searchText = remember { mutableStateOf("") }
     val drinks: MutableState<List<DrinkModel>> = remember { mutableStateOf(listOf()) }
+    val allDrinks: MutableState<List<DrinkModel>> = remember { mutableStateOf(listOf()) }
+    val alcoholFilter = remember { mutableStateOf("All") }
 
     Scaffold(
         topBar = {
@@ -74,8 +80,8 @@ fun SearchScreen(
                 .background(
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            Color(0xFFFFCDD2),
-                            Color(0xFFFFF0F2)
+                            colorResource(id = R.color.rose),
+                            colorResource(id = R.color.rose_pale)
                         )
                     )
                 )
@@ -83,6 +89,7 @@ fun SearchScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            //barre de recherche
             item {
                 OutlinedTextField(
                     value = searchText.value,
@@ -95,7 +102,15 @@ fun SearchScreen(
                             val call: Call<Drinks> = NetworkManager.api.searchDrinksByName(newValue)
                             call.enqueue(object : Callback<Drinks> {
                                 override fun onResponse(call: Call<Drinks?>, response: Response<Drinks?>) {
-                                    drinks.value = response.body()?.drinks ?: emptyList()
+
+                                    allDrinks.value = response.body()?.drinks ?: emptyList()
+
+                                    drinks.value = allDrinks.value.filter { drink ->
+
+                                        alcoholFilter.value == "All" ||
+                                                drink.alcoholic.equals(alcoholFilter.value, true)
+
+                                    }
                                 }
 
                                 override fun onFailure(call: Call<Drinks?>, t: Throwable) {
@@ -105,11 +120,12 @@ fun SearchScreen(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Search a cocktail") },
+                    label = { Text("Search a drink") },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Search,
-                            contentDescription = "search"
+                            contentDescription = "search",
+                            tint = colorResource(id = R.color.bordeaux)
                         )
                     },
                     trailingIcon = {
@@ -120,7 +136,8 @@ fun SearchScreen(
                             }) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
-                                    contentDescription = "clear search"
+                                    contentDescription = "clear search",
+                                    tint = colorResource(id = R.color.bordeaux)
                                 )
                             }
                         }
@@ -128,11 +145,73 @@ fun SearchScreen(
                     singleLine = true,
                     shape = RoundedCornerShape(16.dp),
                     colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White
+                        focusedContainerColor = colorResource(id = R.color.rose_pale),
+                        unfocusedContainerColor = colorResource(id = R.color.rose_pale),
+
+                        focusedIndicatorColor = colorResource(id = R.color.bordeaux),
+                        unfocusedIndicatorColor = colorResource(id = R.color.bordeaux),
+
+                        cursorColor = colorResource(id = R.color.bordeaux),
+                        focusedTextColor = colorResource(id = R.color.bordeaux),
+                        unfocusedTextColor = colorResource(id = R.color.bordeaux)
                     )
                 )
             }
+
+            //filtre alcool
+            item {
+                Row (
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+
+                    FilterChip(
+                        selected = alcoholFilter.value == "All",
+                        onClick = {
+                            alcoholFilter.value = "All"
+                            drinks.value = allDrinks.value
+                        },
+                        label = { Text("All") },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = colorResource(id = R.color.bordeaux),
+                            selectedLabelColor = Color.White
+                        )
+                    )
+
+                    FilterChip(
+                        selected = alcoholFilter.value == "Alcoholic",
+                        onClick = {
+                            alcoholFilter.value = "Alcoholic"
+
+                            drinks.value = allDrinks.value.filter {
+                                it.alcoholic.equals("Alcoholic", true)
+                            }
+                        },
+                        label = { Text("Alcoholic") },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = colorResource(id = R.color.bordeaux),
+                            selectedLabelColor = Color.White
+                        )
+                    )
+
+                    FilterChip(
+                        selected = alcoholFilter.value == "Non Alcoholic",
+                        onClick = {
+                            alcoholFilter.value = "Non Alcoholic"
+                            drinks.value = allDrinks.value.filter {
+                                it.alcoholic.equals("Non Alcoholic", true)
+                            }
+                        },
+                        label = { Text("Non Alcoholic") },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = colorResource(id = R.color.bordeaux),
+                            selectedLabelColor = Color.White
+                        )
+                    )
+                }
+            }
+
+
             if (searchText.value.isBlank()) {
                 item {
                     Column(
@@ -187,7 +266,11 @@ fun SearchScreen(
                 ) {
                     Text(
                         text = drink.name,
-                        fontSize = 26.sp
+                        fontSize = 24.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                        maxLines = 2,
+                        lineHeight = 26.sp
                     )
                 }
             }

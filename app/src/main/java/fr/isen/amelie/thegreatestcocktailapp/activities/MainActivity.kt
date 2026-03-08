@@ -30,7 +30,9 @@ import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import androidx.compose.ui.res.colorResource
 import androidx.compose.material.icons.filled.Search
+import fr.isen.amelie.thegreatestcocktailapp.R
 import fr.isen.amelie.thegreatestcocktailapp.screens.SearchScreen
 import fr.isen.amelie.thegreatestcocktailapp.screens.CategoriesScreen
 import fr.isen.amelie.thegreatestcocktailapp.screens.DetailCocktailScreen
@@ -72,7 +74,7 @@ class MainActivity : ComponentActivity() {
                     },
                     bottomBar = {
                         NavigationBar (
-                            containerColor = Color(0xFF891E1E) //rouge bordeaux
+                            containerColor = colorResource(id = R.color.bordeaux)
                         ) {
                             NavigationItem.entries.forEach { navigationItem ->
                                 NavigationBarItem(
@@ -88,11 +90,11 @@ class MainActivity : ComponentActivity() {
                                         Icon(navigationItem.icon, contentDescription = "")
                                     },
                                     colors = NavigationBarItemDefaults.colors(
-                                        selectedIconColor = Color.White,          // icône sélectionnée
-                                        selectedTextColor = Color(0xFFFFCDD2),          // texte sélectionné
-                                        unselectedIconColor = Color(0xFFFFCDD2),    // icône non sélectionnée
-                                        unselectedTextColor = Color(0xFFFFCDD2),    // texte non sélectionné
-                                        indicatorColor = Color(0xFFFFCDD2)        // fond de l’élément sélectionné (optionnel)
+                                        selectedIconColor = Color.White,
+                                        selectedTextColor = colorResource(id = R.color.rose),
+                                        unselectedIconColor = colorResource(id = R.color.rose),
+                                        unselectedTextColor = colorResource(id = R.color.rose),
+                                        indicatorColor = colorResource(id = R.color.rose)
                                     )
                                 )
                             }
@@ -101,10 +103,9 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        //modifier = Modifier.padding(innerPadding),
                         startDestination = startNavigationItem.route
                     ) {
-                        // La bottombar (3 boutons)
+                        // La bottombar (4 boutons)
                         NavigationItem.entries.forEach { navigationItem ->
                             composable (navigationItem.route) {
                                 when (navigationItem) {
@@ -120,7 +121,7 @@ class MainActivity : ComponentActivity() {
                                         ), snackbarHostState,
                                         // Pour la bottombar dans DrinksScreen
                                         onCategoryClick = { category ->
-                                            navController.navigate(Routes.drinks(category)) // category.replace(" ", "_")
+                                            navController.navigate(Routes.drinks(category))
                                         }
                                     )
                                     NavigationItem.Search -> {

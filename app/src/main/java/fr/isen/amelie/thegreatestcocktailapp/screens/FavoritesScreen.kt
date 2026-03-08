@@ -62,6 +62,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.ui.res.painterResource
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.border
 import fr.isen.amelie.thegreatestcocktailapp.R
 import fr.isen.amelie.thegreatestcocktailapp.activities.DetailCocktailActivity
 import fr.isen.amelie.thegreatestcocktailapp.activities.SharedPreferenceHelper
@@ -114,8 +116,8 @@ fun FavoriteScreen(
                 .background(
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            Color(0xFFFFCDD2),
-                            Color(0xFFFFF0F2)
+                            colorResource(id = R.color.rose),
+                            colorResource(id = R.color.rose_pale)
                         )
                     )
                 )
@@ -157,6 +159,21 @@ fun FavoriteScreen(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    AsyncImage(
+                        model = drink.imageURL,
+                        contentDescription = drink.name,
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clip(CircleShape)
+                            .border(
+                                width = 2.dp,
+                                color = colorResource(id = R.color.bordeaux),
+                                shape = CircleShape
+                            ),
+                        contentScale = ContentScale.Crop
+                    )
+
+                    Spacer(modifier = Modifier.width(10.dp))
 
                     Button(
                         onClick = {
@@ -173,7 +190,13 @@ fun FavoriteScreen(
                             disabledContentColor = Color.Unspecified
                         )
                     ) {
-                        Text(drink.name, fontSize = 30.sp)
+                        Text(
+                            drink.name,
+                            fontSize = 20.sp,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Start)
                     }
                     IconButton(
                         onClick = {

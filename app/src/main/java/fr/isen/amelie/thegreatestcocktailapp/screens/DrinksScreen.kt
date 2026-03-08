@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import fr.isen.amelie.thegreatestcocktailapp.R
 import fr.isen.amelie.thegreatestcocktailapp.activities.DetailCocktailActivity
@@ -50,7 +51,7 @@ fun DrinksScreen(
     val drinks: MutableState<List<DrinkModel>> = remember { mutableStateOf<List<DrinkModel>> (value=listOf()) }
 
     LaunchedEffect (Unit) {
-        val call: Call<Drinks> = NetworkManager.api.getDrinksByCategory(category) //et non category.replace(" ", "_")
+        val call: Call<Drinks> = NetworkManager.api.getDrinksByCategory(category)
         call.enqueue(object : Callback<Drinks> {
             override fun onResponse(p0: Call<Drinks?>, p1: Response<Drinks?>) {
                 drinks.value = p1.body()?.drinks ?: listOf()
@@ -77,8 +78,8 @@ fun DrinksScreen(
                 .background(
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            Color(0xFFFFCDD2),
-                            Color(0xFFFFF0F2)
+                            colorResource(id = R.color.rose),
+                            colorResource(id = R.color.rose_pale)
                         )
                     )
                 )
@@ -90,7 +91,9 @@ fun DrinksScreen(
                 Text(
                     text = category,
                     color = colorResource(id = R.color.bordeaux),
-                    fontSize = 50.sp)
+                    fontSize = 32.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth())
             }
 
             items(items = drinks.value) { drink ->
@@ -110,7 +113,13 @@ fun DrinksScreen(
                         disabledContentColor = Color.Unspecified
                     )
                 ) {
-                    Text(drink.name, fontSize = 30.sp)
+                    Text(
+                        drink.name,
+                        fontSize = 22.sp,
+                        maxLines = 2,
+                        lineHeight = 24.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth())
                 }
             }
         }

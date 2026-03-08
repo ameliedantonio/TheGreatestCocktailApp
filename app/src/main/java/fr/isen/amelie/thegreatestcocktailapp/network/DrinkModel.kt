@@ -10,7 +10,6 @@ class Drinks(
 ): Serializable
 
 data class DrinkModel (
-    // Obligatoires
     @SerializedName(value= "idDrink") val id: String = "",
     @SerializedName(value = "strDrink") val name: String = "",
     @SerializedName(value = "strCategory") val category: String = "",

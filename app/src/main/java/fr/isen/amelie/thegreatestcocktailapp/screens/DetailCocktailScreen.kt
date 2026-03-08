@@ -47,6 +47,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.IconButton
+import androidx.compose.foundation.border
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.LaunchedEffect
 import retrofit2.Callback
@@ -62,6 +63,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePreviewHandler
+import androidx.compose.material.icons.filled.Refresh
 import fr.isen.amelie.thegreatestcocktailapp.R
 import fr.isen.amelie.thegreatestcocktailapp.activities.SharedPreferenceHelper
 import fr.isen.amelie.thegreatestcocktailapp.network.DrinkModel
@@ -79,13 +81,14 @@ fun DetailCocktailScreen(
 
 ) {
     val drink: MutableState<DrinkModel> = remember {mutableStateOf(value = DrinkModel())}
+    val reloadTrigger = remember { mutableStateOf(0) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(reloadTrigger.value) {
         val call: Call<Drinks> = if (drinkId.isNotEmpty()) {
-            //cas "Categories/DrinksScreen" → détail du cocktail cliqué
+            //cas Categories/DrinksScreen → detail du cocktail clique
             NetworkManager.api.getDrinksById(drinkId)
         } else {
-            //cas "À la une" → aléatoire
+            //cas "A la une" → aleatoire
             NetworkManager.api.getRandomCocktail()
         }
 
@@ -110,7 +113,8 @@ fun DetailCocktailScreen(
                 snackbarHostState = snackbarHostState,
                 navController = navController,
                 showBackButton = showBackButton,
-                drinkId = drink.value.id //pour que les fav marchent depuis featured
+                drinkId = drink.value.id, //pour que les fav marchent depuis featured
+                onRefresh = { reloadTrigger.value++ } //pour refresh la page featured
             )
         },
         containerColor = colorResource(R.color.rose_clair),
@@ -127,9 +131,9 @@ fun DetailCocktailScreen(
                 model = drink.value.imageURL,
                 contentDescription = drink.value.name,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .clip(CircleShape)
-                    .size(size = 300.dp),
+                    .size(size = 300.dp)
+                    .border(4.dp, colorResource(id = R.color.bordeaux), CircleShape),
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -137,18 +141,30 @@ fun DetailCocktailScreen(
                 text = drink.value.name,
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black, //ou 0xFFFF9800
+                color = colorResource(id = R.color.bordeaux),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Category : " + drink.value.category)
-            Text(text = "Type of glass : " + drink.value.glass)
-            Text(text = drink.value.alcoholic)
+            Text(
+                text = "Category : " + drink.value.category,
+                color = colorResource(id = R.color.bordeaux)
+            )
+            Text(
+                text = "Type of glass : " + drink.value.glass,
+                color = colorResource(id = R.color.bordeaux)
+            )
+            Text(
+                text = drink.value.alcoholic,
+                color = colorResource(id = R.color.bordeaux)
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Ingredients",
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
+                fontSize = 20.sp,
+                color = colorResource(id = R.color.bordeaux)
             )
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -169,15 +185,25 @@ fun DetailCocktailScreen(
                     if (ingredients.isEmpty()) {
                         Text(
                             text = "No ingredients found",
-                            color = Color(0xFF281A0D),
+                            color = colorResource(id = R.color.bordeaux),
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
                     } else {
                         ingredients.forEach { (ingredient, measure) ->
+
+                            val measureText = measure.trim()
+                            val ingredientText = ingredient.trim()
+
+                            val displayText = if (measureText.isNotEmpty()) {
+                                "• $measureText of $ingredientText"
+                            } else {
+                                "• $ingredientText"
+                            }
+
                             Text(
-                                text = "• ${measure.trim()} of ${ingredient.trim()}",
-                                color = Color(0xFF281A0D),
+                                text = displayText,
+                                color = colorResource(id = R.color.bordeaux),
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -191,7 +217,8 @@ fun DetailCocktailScreen(
             Text(
                 text = "Recipe",
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
+                fontSize = 20.sp,
+                color = colorResource(id = R.color.bordeaux)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Card(
@@ -209,7 +236,7 @@ fun DetailCocktailScreen(
                 ) {
                     Text(
                         text = drink.value.instructions,
-                        color = Color(0xFF281A0D)
+                        color = colorResource(id = R.color.bordeaux)
                     )
                         }
                     }
@@ -225,7 +252,8 @@ fun TopAppBar(
     snackbarHostState: SnackbarHostState,
     navController : NavController,
     showBackButton: Boolean,
-    drinkId: String? = null
+    drinkId: String? = null,
+    onRefresh: () -> Unit = {}
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -235,16 +263,20 @@ fun TopAppBar(
             )
         },
 
-        // Flèche retour à gauche si showbackButton==true
+        // Flèche refresh sinon fleche retour arriere
         navigationIcon = {
-            if (showBackButton) {
-                /*
-                IconButton(onClick = { navController.popBackStack() }) {
+            if (!showBackButton) {
+
+                IconButton(onClick = { onRefresh() }) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Retour",
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "refresh",
                         tint = Color.White
-                 */
+                    )
+                }
+
+            } else {
+
                 val activity = (LocalContext.current as? Activity)
 
                 IconButton(onClick = {
@@ -278,8 +310,6 @@ fun TopAppBar(
             val context = LocalContext.current
             val sharedPreferences = SharedPreferenceHelper(context)
 
-            //val drinkList = sharedPreferences.getFavoriteList()
-            //val isFav = remember { mutableStateOf(getFavoritesStatusForID(drinkId, drinkList)) }
             val isFav = remember(drinkId) {
                 mutableStateOf(
                     drinkId?.let {
@@ -291,26 +321,6 @@ fun TopAppBar(
             IconToggleButton(
                 isFav.value,
                 onCheckedChange =
-                    /*{
-                    isFav.value = !isFav.value
-                    snackbarScope.launch {
-                        snackbarHostState.showSnackbar(if (isFav.value) added else removed)
-                    // TOAST
-//                    Toast.makeText(
-//                        context,
-//                        if (isFav.value) added else removed,
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-                    }
-
-                    if (drinkId != null) {
-                        updateFavoriteList(
-                            drinkId.toString(),
-                            isFav.value,
-                            sharedPreferences,
-                            drinkList)
-                    }
-                }*/
                     {
                         val currentId = drinkId
                         if (currentId.isNullOrEmpty()) return@IconToggleButton
@@ -359,7 +369,6 @@ fun updateFavoriteList(drinkId: String,
                        sharedPreferenceHelper: SharedPreferenceHelper,
                        list: ArrayList<String>) {
     if (shouldBeAdded) {
-        //list.add(drinkId)
         if (!list.contains(drinkId)) {
             list.add(drinkId)
         }
